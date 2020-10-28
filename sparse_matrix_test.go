@@ -6,11 +6,11 @@ import (
 )
 
 func TestSparseMatrix(t *testing.T) {
-	values := make(map[int]map[int]complex64)
-	values[0] = make(map[int]complex64)
+	values := make(map[int]map[int]complex128)
+	values[0] = make(map[int]complex128)
 	values[0][0] = 1
 	values[0][1] = 2
-	values[1] = make(map[int]complex64)
+	values[1] = make(map[int]complex128)
 	values[1][0] = 3
 	values[1][1] = 4
 
@@ -23,12 +23,12 @@ func TestSparseMatrix(t *testing.T) {
 	fmt.Println(matrix.Scale(2))
 	fmt.Println(matrix.Transpose())
 
-	values = make(map[int]map[int]complex64)
-	values[0] = make(map[int]complex64)
+	values = make(map[int]map[int]complex128)
+	values[0] = make(map[int]complex128)
 	values[0][0] = 1
-	values[1] = make(map[int]complex64)
+	values[1] = make(map[int]complex128)
 	values[1][0] = 4
-	values[2] = make(map[int]complex64)
+	values[2] = make(map[int]complex128)
 	values[2][1] = 5
 
 	matrix = NewSparseMatrix(3, 3, values)

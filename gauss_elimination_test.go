@@ -6,7 +6,7 @@ import (
 )
 
 func TestGaussElimination(t *testing.T) {
-	AValue := [][]complex64{
+	AValue := [][]complex128{
 		{1, 4, 7},
 		{2, 5, 8},
 		{3, 6, 11},
@@ -14,7 +14,7 @@ func TestGaussElimination(t *testing.T) {
 	ASparse := NewSparseMatrixFrom2DTable(3, 3, AValue)
 	fmt.Println(ASparse)
 
-	bValue := [][]complex64{{1}, {1}, {1}}
+	bValue := [][]complex128{{1}, {1}, {1}}
 	bSparse := NewSparseMatrixFrom2DTable(3, 1, bValue)
 	fmt.Println(bSparse)
 
