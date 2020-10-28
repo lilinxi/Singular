@@ -13,3 +13,21 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Others
+*.idea/
+*cmake-build-debug/
+*cmake-build*/
+*/venv/
+*target/
+
+**/nohup.out
+*.log
+*/.DS_Store
+
+###########
+*bin/
+*build/
+*output/
+*log/
+*outer**/
