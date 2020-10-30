@@ -7,23 +7,23 @@ import (
 
 type SparseMatrix struct {
 	rows, cols int
-	values     map[int]map[int]float64 // map[rows]map[cols]float64
+	values     map[int]map[int]complex128 // map[rows]map[cols]complex128
 }
 
 type Tuple struct {
 	row, col int
-	value    float64
+	value    complex128
 }
 
 func NewSparseMatrix(rows, cols int) SparseMatrix {
 	return SparseMatrix{
 		rows:   rows,
 		cols:   cols,
-		values: make(map[int]map[int]float64),
+		values: make(map[int]map[int]complex128),
 	}
 }
 
-func NewSparseMatrixFromMap(rows, cols int, values map[int]map[int]float64) SparseMatrix {
+func NewSparseMatrixFromMap(rows, cols int, values map[int]map[int]complex128) SparseMatrix {
 	return SparseMatrix{
 		rows:   rows,
 		cols:   cols,
@@ -40,11 +40,11 @@ func NewSparseMatrixCopy(sparseMatrix SparseMatrix) SparseMatrix {
 }
 
 func NewSparseMatrixFromTupleList(rows, cols int, tupleList []Tuple) SparseMatrix {
-	values := make(map[int]map[int]float64)
+	values := make(map[int]map[int]complex128)
 
 	for _, tuple := range tupleList {
 		if _, ok := values[tuple.row]; !ok {
-			values[tuple.row] = make(map[int]float64)
+			values[tuple.row] = make(map[int]complex128)
 		}
 		values[tuple.row][tuple.col] = tuple.value
 	}
@@ -56,14 +56,14 @@ func NewSparseMatrixFromTupleList(rows, cols int, tupleList []Tuple) SparseMatri
 	}
 }
 
-func NewSparseMatrixFrom2DTable(rows, cols int, valueTable [][]float64) SparseMatrix {
-	values := make(map[int]map[int]float64)
+func NewSparseMatrixFrom2DTable(rows, cols int, valueTable [][]complex128) SparseMatrix {
+	values := make(map[int]map[int]complex128)
 
 	for row := 0; row < rows; row++ {
 		for col := 0; col < cols; col++ {
 			if valueTable[row][col] != 0 {
 				if _, ok := values[row]; !ok {
-					values[row] = make(map[int]float64)
+					values[row] = make(map[int]complex128)
 				}
 				values[row][col] = valueTable[row][col]
 			}
@@ -82,10 +82,10 @@ func NewSparseMatrixFromDenseMatrix(rows, cols int, matrix DenseMatrix) SparseMa
 }
 
 // 递归拷贝
-func copyValues(values map[int]map[int]float64) map[int]map[int]float64 {
-	cp := make(map[int]map[int]float64)
+func copyValues(values map[int]map[int]complex128) map[int]map[int]complex128 {
+	cp := make(map[int]map[int]complex128)
 	for row, values := range values {
-		cp[row] = make(map[int]float64)
+		cp[row] = make(map[int]complex128)
 		for col, value := range values {
 			cp[row][col] = value
 		}
@@ -96,7 +96,7 @@ func copyValues(values map[int]map[int]float64) map[int]map[int]float64 {
 func (m SparseMatrix) Rows() int { return m.rows }
 func (m SparseMatrix) Cols() int { return m.cols }
 
-func (m SparseMatrix) Get(rows, cols int) float64 {
+func (m SparseMatrix) Get(rows, cols int) complex128 {
 	if rows >= m.Rows() || cols >= m.Cols() || rows < 0 || cols < 0 {
 		panic("")
 	}
@@ -112,16 +112,16 @@ func (m SparseMatrix) Get(rows, cols int) float64 {
 	return value
 }
 
-func (m *SparseMatrix) Set(rows, cols int, value float64) {
+func (m *SparseMatrix) Set(rows, cols int, value complex128) {
 	if _, ok := m.values[rows]; !ok {
-		m.values[rows] = make(map[int]float64)
+		m.values[rows] = make(map[int]complex128)
 	}
 	m.values[rows][cols] = value
 }
 
-func (m *SparseMatrix) SetAdd(rows, cols int, value float64) {
+func (m *SparseMatrix) SetAdd(rows, cols int, value complex128) {
 	if _, ok := m.values[rows]; !ok {
-		m.values[rows] = make(map[int]float64)
+		m.values[rows] = make(map[int]complex128)
 	}
 	if _, ok := m.values[rows][cols]; !ok {
 		m.values[rows][cols] = 0
@@ -129,9 +129,9 @@ func (m *SparseMatrix) SetAdd(rows, cols int, value float64) {
 	m.values[rows][cols] += value
 }
 
-func (m *SparseMatrix) SetMul(rows, cols int, value float64) {
+func (m *SparseMatrix) SetMul(rows, cols int, value complex128) {
 	if _, ok := m.values[rows]; !ok {
-		m.values[rows] = make(map[int]float64)
+		m.values[rows] = make(map[int]complex128)
 	}
 	if _, ok := m.values[rows][cols]; !ok {
 		return
@@ -148,7 +148,7 @@ func (m SparseMatrix) Add(matrix SparseMatrix) SparseMatrix {
 
 	for row, values := range matrix.values {
 		if _, ok := retValues[row]; !ok {
-			retValues[row] = make(map[int]float64)
+			retValues[row] = make(map[int]complex128)
 		}
 		for col, value := range values {
 			if _, ok := retValues[row][col]; !ok {
@@ -175,7 +175,7 @@ func (m SparseMatrix) Sub(matrix SparseMatrix) SparseMatrix {
 
 	for row, values := range matrix.values {
 		if _, ok := retValues[row]; !ok {
-			retValues[row] = make(map[int]float64)
+			retValues[row] = make(map[int]complex128)
 		}
 		for col, value := range values {
 			if _, ok := retValues[row][col]; !ok {
@@ -198,11 +198,11 @@ func (m SparseMatrix) Dot(matrix SparseMatrix) SparseMatrix {
 		panic("")
 	}
 
-	retValues := make(map[int]map[int]float64)
+	retValues := make(map[int]map[int]complex128)
 
 	for row := 0; row < m.Rows(); row++ {
 		for col := 0; col < matrix.Cols(); col++ {
-			var value float64 = 0
+			var value complex128 = 0
 			for k := 0; k < m.Cols(); k++ {
 				if m.values[row][k] == 0 || matrix.values[k][col] == 0 {
 					continue
@@ -211,7 +211,7 @@ func (m SparseMatrix) Dot(matrix SparseMatrix) SparseMatrix {
 			}
 			if value != 0 {
 				if _, ok := retValues[row]; !ok {
-					retValues[row] = make(map[int]float64)
+					retValues[row] = make(map[int]complex128)
 				}
 				retValues[row][col] = value
 			}
@@ -225,7 +225,7 @@ func (m SparseMatrix) Dot(matrix SparseMatrix) SparseMatrix {
 	}
 }
 
-func (m SparseMatrix) Scale(scale float64) SparseMatrix {
+func (m SparseMatrix) Scale(scale complex128) SparseMatrix {
 	retValues := copyValues(m.values)
 
 	for row, values := range m.values {
@@ -242,12 +242,12 @@ func (m SparseMatrix) Scale(scale float64) SparseMatrix {
 }
 
 func (m SparseMatrix) Transpose() SparseMatrix {
-	retValues := make(map[int]map[int]float64)
+	retValues := make(map[int]map[int]complex128)
 
 	for row, values := range m.values {
 		for col, value := range values {
 			if _, ok := retValues[col]; !ok {
-				retValues[col] = make(map[int]float64)
+				retValues[col] = make(map[int]complex128)
 			}
 			retValues[col][row] = value
 		}
@@ -260,11 +260,11 @@ func (m SparseMatrix) Transpose() SparseMatrix {
 	}
 }
 
-func (m SparseMatrix) Norm2Square() float64 {
-	var norm2square float64
+func (m SparseMatrix) Norm2Square() complex128 {
+	var norm2square complex128
 	for _, values := range m.values {
 		for _, value := range values {
-			norm2square += value *value
+			norm2square += value * complex(real(value), -imag(value))
 		}
 	}
 	return norm2square
@@ -275,16 +275,14 @@ func (m SparseMatrix) String() string {
 
 	buf.WriteString(fmt.Sprintf("%dX%d:\n", m.Rows(), m.Cols()))
 
-	buf.WriteString("[\n")
 	for i := 0; i < m.Rows(); i++ {
 		for j := 0; j < m.Cols(); j++ {
 			buf.WriteString(fmt.Sprintf("%v", m.Get(i, j)))
 			buf.WriteString(" ")
 		}
-		buf.WriteString("\b;")
+		buf.WriteString("\b")
 		buf.WriteString("\n")
 	}
-	buf.WriteString("]")
 
 	return buf.String()
 }
