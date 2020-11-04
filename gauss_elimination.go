@@ -21,7 +21,7 @@ func GaussElimination(A, b SparseMatrix) (x SparseMatrix) {
 		for j := i + 1; j < A.Rows(); j++ {
 			x.SetAdd(i, 0, -A.Get(i, j)*x.Get(j, 0))
 		}
-		x.SetMul(i, 0, 1/A.Get(i, i))
+		x.SetScale(i, 0, 1/A.Get(i, i))
 	}
 
 	//fmt.Println(A)

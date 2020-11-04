@@ -1,17 +1,11 @@
 package Singular
 
 import (
-	"fmt"
 	"math"
 )
 
-func PowerMethod(matrix SparseMatrix, epsilon float64) (eig float64, vec SparseMatrix) {
-	values := make(map[int]map[int]float64)
-	values[0] = make(map[int]float64)
-	values[0][0] = 1
-	values[0][1] = 1
-	values[0][2] = 1
-	vec = NewSparseMatrixFromMap(matrix.Cols(), 1, values)
+func PowerMethodDev(matrix SparseMatrix, epsilon float64) (eig float64, vec SparseMatrix) {
+	vec = NewSparseMatrixFrom1DList([]float64{1, 1, 1})
 
 	var lastEig float64 = 0
 	for {
@@ -22,8 +16,38 @@ func PowerMethod(matrix SparseMatrix, epsilon float64) (eig float64, vec SparseM
 			break
 		}
 		lastEig = eig
-		fmt.Println("eig: ", eig)
+		//fmt.Println("eig: ", eig)
 	}
 
 	return eig, vec
+}
+
+func PowerMethod(matrix SparseMatrix, offset, epsilon float64) (eig float64, vec SparseMatrix) {
+	if !matrix.Square() {
+		panic("")
+	}
+
+	if offset != 0 {
+		matrix = matrix.Add(NewSparseMatrixEyes(matrix.Rows()).Scale(offset))
+	}
+
+	vec = NewSparseMatrixFull(matrix.Rows(), 1, 1)
+	vec.Scale(vec.Norm(2))
+
+	var lastEig float64 = 0
+	vec = matrix.Dot(vec)
+	lastEig = vec.Norm(2)
+	vec = vec.Scale(1 / lastEig)
+	for {
+		vec = matrix.Dot(vec)
+		eig = vec.Norm(2)
+		vec = vec.Scale(1 / eig)
+		if math.Abs(lastEig-eig) < epsilon {
+			break
+		}
+		lastEig = eig
+		//fmt.Println("eig: ", eig)
+	}
+
+	return eig-offset, vec
 }

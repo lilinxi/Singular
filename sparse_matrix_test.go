@@ -6,46 +6,38 @@ import (
 )
 
 func TestSparseMatrix(t *testing.T) {
-	values := make(map[int]map[int]float64)
-	values[0] = make(map[int]float64)
-	values[0][0] = 1
-	values[0][1] = 2
-	values[1] = make(map[int]float64)
-	values[1][0] = 3
-	values[1][1] = 4
+	a := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4})
+	b := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4}).Transpose()
+	ab := a.Dot(b)
+	fmt.Println(a)
+	fmt.Println(b)
+	fmt.Println(ab)
 
-	matrix := NewSparseMatrixFromMap(2, 2, values)
-	fmt.Println(matrix)
+	abR0 := ab.GetRow(0)
+	abR1 := ab.GetRow(1)
+	abR2 := ab.GetRow(2)
+	abR3 := ab.GetRow(3)
+	fmt.Println(abR0)
+	fmt.Println(abR1)
+	fmt.Println(abR2)
+	fmt.Println(abR3)
 
-	fmt.Println(matrix.Add(matrix))
-	fmt.Println(matrix.Sub(matrix))
-	fmt.Println(matrix.Dot(matrix))
-	fmt.Println(matrix.Scale(2))
-	fmt.Println(matrix.Transpose())
+	abC0 := ab.GetCol(0)
+	abC1 := ab.GetCol(1)
+	abC2 := ab.GetCol(2)
+	abC3 := ab.GetCol(3)
+	fmt.Println(abC0)
+	fmt.Println(abC1)
+	fmt.Println(abC2)
+	fmt.Println(abC3)
 
-	values = make(map[int]map[int]float64)
-	values[0] = make(map[int]float64)
-	values[0][0] = 1
-	values[1] = make(map[int]float64)
-	values[1][0] = 4
-	values[2] = make(map[int]float64)
-	values[2][1] = 5
+	fmt.Println(ab)
+	ab.SetRow(0, abR3)
+	ab.SetCol(0, abC3)
+	fmt.Println(ab)
 
-	matrix = NewSparseMatrixFromMap(3, 3, values)
-	fmt.Println(matrix)
+	fmt.Println(NewSparseMatrixEyes(4))
+	fmt.Println(ab.Add(NewSparseMatrixEyes(4).Scale(-4)))
+	fmt.Println(ab.NormInf())
 
-	fmt.Println(matrix.Add(matrix))
-	fmt.Println(matrix.Sub(matrix))
-	fmt.Println(matrix.Dot(matrix))
-	fmt.Println(matrix.Scale(2))
-	fmt.Println(matrix.Transpose())
-
-	values = make(map[int]map[int]float64)
-	values[0] = make(map[int]float64)
-	values[0][0] = 1
-	values[0][1] = 2
-	values[0][2] = 3
-	matrix = NewSparseMatrixFromMap(3, 3, values)
-	fmt.Println(matrix)
-	fmt.Println(matrix.Norm2Square())
 }
