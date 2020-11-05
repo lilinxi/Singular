@@ -22,9 +22,11 @@ func TestInversePowerMethod(t *testing.T) {
 	fmt.Println(eig)
 	fmt.Println(vec)
 
-	fmt.Println(A)
-
-	fmt.Println(1 / eig)
-	fmt.Println(vec.Scale(1 / eig))
+	fmt.Println(vec.Scale(eig))
 	fmt.Println(A.Dot(vec))
+
+	for i := -10.0; i < 10; i+=1.05 {
+		eig, _ := InversePowerMethod(A, i, Epsilon)
+		fmt.Println(eig)
+	}
 }

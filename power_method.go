@@ -46,8 +46,11 @@ func PowerMethod(matrix SparseMatrix, offset, epsilon float64) (eig float64, vec
 			break
 		}
 		lastEig = eig
-		//fmt.Println("eig: ", eig)
 	}
 
-	return eig-offset, vec
+	if vec.Get(0, 0)*matrix.Dot(vec).Get(0, 0) < 0 {
+		eig = -eig
+	}
+
+	return eig - offset, vec
 }

@@ -30,5 +30,9 @@ func InversePowerMethod(matrix SparseMatrix, offset, epsilon float64) (eig float
 		lastEig = eig
 	}
 
-	return eig-offset, vec
+	if vec.Get(0, 0)*matrix.Dot(vec).Get(0, 0) < 0 {
+		eig = -eig
+	}
+
+	return 1/eig - offset, vec
 }

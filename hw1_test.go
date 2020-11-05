@@ -33,14 +33,17 @@ func TestHw1(t *testing.T) {
 
 	//fmt.Println(A)
 
-	eig, _ := PowerMethod(A, 0, Epsilon)
-	fmt.Println(eig)
+	eig1, _ := PowerMethod(A, 0, Epsilon)
+	fmt.Println(eig1)
 
-	for i := 10.0; i > -10; i -= 1 {
-		Acpy := A.Add(NewSparseMatrixEyes(N).Scale(i))
-		eig, _ := PowerMethod(Acpy, 0, Epsilon)
-		fmt.Println(eig, eig-i)
-	}
+	eig2, _ := InversePowerMethod(A, 0, Epsilon)
+	fmt.Println(eig2)
+
+	//for i := 10.0; i > -10; i -= 1 {
+	//	Acpy := A.Add(NewSparseMatrixEyes(N).Scale(i))
+	//	eig, _ := PowerMethod(Acpy, 0, Epsilon)
+	//	fmt.Println(eig, eig-i)
+	//}
 
 	//fmt.Println(vec)
 
@@ -48,7 +51,7 @@ func TestHw1(t *testing.T) {
 	//fmt.Println(l)
 }
 
-func TestHw1_1(t *testing.T) {
+func TestHw1_2(t *testing.T) {
 	A := NewSparseMatrix(501, 501)
 	a := func(i int) float64 {
 		fi := float64(i)
@@ -71,10 +74,19 @@ func TestHw1_1(t *testing.T) {
 		A.Set(i-2, i, c)
 	}
 
-	fmt.Println(A)
+	eig1, _ := PowerMethod(A, 0, Epsilon)
+	fmt.Println(eig1)
 
-	l, u := LU(A)
-	fmt.Println(l)
-	fmt.Println(u)
-	fmt.Println(l.Dot(u).Add(A.Scale(-1)).Norm2Square())
+	eig1, _ = PowerMethod(A, eig1, Epsilon)
+	fmt.Println(eig1)
+
+	eig2, _ := InversePowerMethod(A, 0, Epsilon)
+	fmt.Println(eig2)
+	//
+	//eig3 := eig2 - eig1
+	//
+	//lamdba1 := math.Min(eig1, eig3)
+	//lamdba2 := math.Max(eig1, eig3)
+	//fmt.Println(lamdba1, lamdba2)
+
 }
