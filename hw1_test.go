@@ -74,19 +74,17 @@ func TestHw1_2(t *testing.T) {
 		A.Set(i-2, i, c)
 	}
 
-	eig1, _ := PowerMethod(A, 0, Epsilon)
-	fmt.Println(eig1)
-
-	eig1, _ = PowerMethod(A, eig1, Epsilon)
-	fmt.Println(eig1)
+	eig1, vec := PowerMethod(A, 0, Epsilon)
+	if ErrorSparseMatrix(vec.Scale(eig1), A.Dot(vec)) > Epsilon {
+		fmt.Println("eig1:", eig1, "error:", ErrorSparseMatrix(vec.Scale(eig1), A.Dot(vec)))
+		eig1, vec = PowerMethod(A, eig1, Epsilon)
+	}
+	fmt.Println("eig1:", eig1, "error:", ErrorSparseMatrix(vec.Scale(eig1), A.Dot(vec)))
 
 	eig2, _ := InversePowerMethod(A, 0, Epsilon)
-	fmt.Println(eig2)
-	//
-	//eig3 := eig2 - eig1
-	//
-	//lamdba1 := math.Min(eig1, eig3)
-	//lamdba2 := math.Max(eig1, eig3)
-	//fmt.Println(lamdba1, lamdba2)
-
+	if ErrorSparseMatrix(vec.Scale(eig2), A.Dot(vec)) > Epsilon {
+		fmt.Println("eig2:", eig2, "error:", ErrorSparseMatrix(vec.Scale(eig2), A.Dot(vec)))
+		eig2, vec = InversePowerMethod(A, eig2, Epsilon)
+	}
+	fmt.Println("eig2:", eig2, "error:", ErrorSparseMatrix(vec.Scale(eig2), A.Dot(vec)))
 }

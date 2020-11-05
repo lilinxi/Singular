@@ -25,6 +25,8 @@ func TestPowerMethod(t *testing.T) {
 	fmt.Println(vec.Scale(eig))
 	fmt.Println(A.Dot(vec))
 
+	fmt.Println("Error:", ErrorSparseMatrix(vec.Scale(eig), A.Dot(vec)))
+
 	for i := -10.0; i < 10; i++ {
 		eig, _ := PowerMethod(A, i, Epsilon)
 		fmt.Println(eig)
