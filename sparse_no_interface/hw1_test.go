@@ -31,24 +31,11 @@ func TestHw1(t *testing.T) {
 		A.Set(i-2, i, c)
 	}
 
-	//fmt.Println(A)
-
-	eig1, _ := PowerMethod(A, 0, Epsilon)
+	eig1, _ := PowerMethodDev2(A, 0, Epsilon)
 	fmt.Println(eig1)
 
 	eig2, _ := InversePowerMethod(A, 0, Epsilon)
 	fmt.Println(eig2)
-
-	//for i := 10.0; i > -10; i -= 1 {
-	//	Acpy := A.Add(NewSparseMatrixEyes(N).Scale(i))
-	//	eig, _ := PowerMethod(Acpy, 0, Epsilon)
-	//	fmt.Println(eig, eig-i)
-	//}
-
-	//fmt.Println(vec)
-
-	//l,_:=LU(A)
-	//fmt.Println(l)
 }
 
 func TestHw1_2(t *testing.T) {
