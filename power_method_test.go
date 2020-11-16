@@ -1,0 +1,34 @@
+package Singular
+
+import (
+	"fmt"
+	"testing"
+)
+
+func TestPowerMethod(t *testing.T) {
+	A := NewSparseMatrixFrom2DTable(3, 3, [][]float64{
+		{1, 2, 3},
+		{2, 1, 3},
+		{3, 3, 5},
+	})
+	fmt.Println(A)
+	//ans =
+	//
+	//-1.00000
+	//-0.35890
+	//8.35890
+
+	eig, vec := PowerMethod(A, 0, Epsilon)
+	fmt.Println(eig)
+	fmt.Println(vec)
+
+	fmt.Println(vec.Scale(eig))
+	fmt.Println(A.Dot(vec))
+
+	fmt.Println("Error:", ErrorSparseMatrix(vec.Scale(eig), A.Dot(vec)))
+
+	for i := -10.0; i < 10; i++ {
+		eig, _ := PowerMethod(A, i, Epsilon)
+		fmt.Println(eig)
+	}
+}
