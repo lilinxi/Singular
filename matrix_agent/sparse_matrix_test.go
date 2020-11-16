@@ -1,10 +1,5 @@
 package Singular
 
-import (
-	"fmt"
-	"testing"
-)
-
 //func TestSparseMatrix(t *testing.T) {
 //	a := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4})
 //	b := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4}).Transpose()
@@ -41,11 +36,11 @@ import (
 //	fmt.Println(ab.NormInf())
 //}
 
-func TestNewSparseMatrix_Interface(t *testing.T) {
-	a := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4})
-	var b Matrixable = &a
-	fmt.Println(b)
-	//PrintMatrix(a)
-	//b := a.Copy()
-	//fmt.Println(b.Cols(), b.Rows())
-}
+//func TestNewSparseMatrix_Interface(t *testing.T) {
+//	a := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4})
+//	var b Matrixable = &a
+//	fmt.Println(b)
+//	//PrintMatrix(a)
+//	//b := a.Copy()
+//	//fmt.Println(b.Cols(), b.Rows())
+//}

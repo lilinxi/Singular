@@ -1,11 +1,9 @@
 package Singular
 
-import "fmt"
-
-type SparseMatrix struct {
-	MatrixData
-	values map[int]map[int]float64 // map[rows]map[cols]float64
-}
+//type SparseMatrix struct {
+//	MatrixData
+//	values map[int]map[int]float64 // map[rows]map[cols]float64
+//}
 
 //func NewSparseMatrixFrom2DTable(rows, cols int, valueTable [][]float64) SparseMatrix {
 //	values := make(map[int]map[int]float64)
@@ -27,27 +25,27 @@ type SparseMatrix struct {
 //	}
 //}
 
-func NewSparseMatrixFrom1DList(valueList []float64) Matrix {
-	values := make(map[int]map[int]float64)
-
-	for col, value := range valueList {
-		if value == 0 {
-			continue
-		} else {
-			values[col] = make(map[int]float64)
-			values[col][0] = value
-		}
-	}
-
-	matrix := NewMatrix(len(valueList), 1)
-	data := &SparseMatrix{
-		Matrix: matrix,
-		values: values,
-	}
-	matrix.SetData(data)
-
-	return matrix
-}
+//func NewSparseMatrixFrom1DList(valueList []float64) Matrix {
+//	values := make(map[int]map[int]float64)
+//
+//	for col, value := range valueList {
+//		if value == 0 {
+//			continue
+//		} else {
+//			values[col] = make(map[int]float64)
+//			values[col][0] = value
+//		}
+//	}
+//
+//	matrix := NewMatrix(len(valueList), 1)
+//	data := &SparseMatrix{
+//		Matrix: matrix,
+//		values: values,
+//	}
+//	matrix.SetData(data)
+//
+//	return matrix
+//}
 
 //type Tuple struct {
 //	row, col int
@@ -175,21 +173,21 @@ func NewSparseMatrixFrom1DList(valueList []float64) Matrix {
 //	}
 //}
 //
-func (m SparseMatrix) Get(rows, cols int) float64 {
-	if rows >= m.Rows() || cols >= m.Cols() || rows < 0 || cols < 0 {
-		panic(fmt.Sprintf("error: %d, %d, limit: %d, %d", rows, cols, m.Rows(), m.Cols()))
-	}
-
-	values, ok := m.values[rows]
-	if !ok {
-		return 0
-	}
-	value, ok := values[cols]
-	if !ok {
-		return 0
-	}
-	return value
-}
+//func (m SparseMatrix) Get(rows, cols int) float64 {
+//	if rows >= m.Rows() || cols >= m.Cols() || rows < 0 || cols < 0 {
+//		panic(fmt.Sprintf("error: %d, %d, limit: %d, %d", rows, cols, m.Rows(), m.Cols()))
+//	}
+//
+//	values, ok := m.values[rows]
+//	if !ok {
+//		return 0
+//	}
+//	value, ok := values[cols]
+//	if !ok {
+//		return 0
+//	}
+//	return value
+//}
 
 //
 //func (m *SparseMatrix) Set(rows, cols int, value float64) {
@@ -443,23 +441,23 @@ func (m SparseMatrix) Get(rows, cols int) float64 {
 //	return buf.String()
 //}
 
-/**
-复制矩阵
-*/
-func (m SparseMatrix) Copy() Matrix {
-	return SparseMatrix{
-		rows:   m.Rows(),
-		cols:   m.Cols(),
-		values: copyValues(m.values),
-	}
-}
-
-/**
-复制矩阵的大小
-*/
-func (m SparseMatrix) Like() Matrix {
-	return SparseMatrix{
-		rows: m.cols,
-		cols: m.Rows(),
-	}
-}
+///**
+//复制矩阵
+//*/
+//func (m SparseMatrix) Copy() Matrix {
+//	return SparseMatrix{
+//		rows:   m.Rows(),
+//		cols:   m.Cols(),
+//		values: copyValues(m.values),
+//	}
+//}
+//
+///**
+//复制矩阵的大小
+//*/
+//func (m SparseMatrix) Like() Matrix {
+//	return SparseMatrix{
+//		rows: m.cols,
+//		cols: m.Rows(),
+//	}
+//}

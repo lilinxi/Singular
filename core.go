@@ -36,3 +36,30 @@ func ErrorSparseMatrix(a SparseMatrix, b SparseMatrix) float64 {
 	}
 	return err
 }
+
+func EqualDenseMatrix(a DenseMatrix, b DenseMatrix) bool {
+	if a.Rows() != b.Rows() || a.Cols() != b.Cols() {
+		panic("")
+	}
+	for i := 0; i < a.Rows(); i++ {
+		for j := 0; j < a.Cols(); j++ {
+			if !Equal(a.Get(i, j), b.Get(i, j)) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func ErrorDenseMatrix(a DenseMatrix, b DenseMatrix) float64 {
+	if a.Rows() != b.Rows() || a.Cols() != b.Cols() {
+		panic("")
+	}
+	err := 0.0
+	for i := 0; i < a.Rows(); i++ {
+		for j := 0; j < a.Cols(); j++ {
+			err += math.Pow(a.Get(i, j)-b.Get(i, j), 2)
+		}
+	}
+	return err
+}

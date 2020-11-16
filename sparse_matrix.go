@@ -149,9 +149,9 @@ func (m SparseMatrix) IsRowVector() bool { return m.Rows() == 1 }
 func (m SparseMatrix) IsColVector() bool { return m.Cols() == 1 }
 func (m SparseMatrix) Square() bool      { return m.Rows() == m.Cols() }
 
-func (m SparseMatrix) checkRowCol(rows, cols int) {
+func (m SparseMatrix) checkRowsCols(rows, cols int) {
 	if rows >= m.Rows() || cols >= m.Cols() || rows < 0 || cols < 0 {
-		panic("")
+		panic(fmt.Sprintf("error: (%d, %d) must limit: (%d, %d)", rows, cols, m.Rows(), m.Cols()))
 	}
 }
 
@@ -333,8 +333,8 @@ func (m SparseMatrix) NormInf() float64 {
 }
 
 func (m SparseMatrix) GetSlice(rowBegin, rowEnd, colBegin, colEnd int) SparseMatrix {
-	m.checkRowCol(rowBegin, colBegin)
-	m.checkRowCol(rowEnd-1, colEnd-1)
+	m.checkRowsCols(rowBegin, colBegin)
+	m.checkRowsCols(rowEnd-1, colEnd-1)
 	row := rowEnd - rowBegin
 	col := colEnd - colBegin
 	if row <= 0 || col <= 0 {
@@ -353,8 +353,8 @@ func (m *SparseMatrix) SetSlice(rowBegin, colBegin int, matrix SparseMatrix) {
 	rowEnd := rowBegin + matrix.Rows()
 	colEnd := colBegin + matrix.Cols()
 
-	m.checkRowCol(rowBegin, colBegin)
-	m.checkRowCol(rowEnd-1, colEnd-1)
+	m.checkRowsCols(rowBegin, colBegin)
+	m.checkRowsCols(rowEnd-1, colEnd-1)
 
 	row := rowEnd - rowBegin
 	col := colEnd - colBegin
@@ -370,17 +370,17 @@ func (m *SparseMatrix) SetSlice(rowBegin, colBegin int, matrix SparseMatrix) {
 }
 
 func (m SparseMatrix) GetRow(row int) SparseMatrix {
-	m.checkRowCol(row, 0)
+	m.checkRowsCols(row, 0)
 	return m.GetSlice(row, row+1, 0, m.Cols())
 }
 
 func (m SparseMatrix) GetCol(col int) SparseMatrix {
-	m.checkRowCol(0, col)
+	m.checkRowsCols(0, col)
 	return m.GetSlice(0, m.Rows(), col, col+1)
 }
 
 func (m *SparseMatrix) SetRow(row int, matrix SparseMatrix) {
-	m.checkRowCol(row, 0)
+	m.checkRowsCols(row, 0)
 
 	if !matrix.IsRowVector() || m.Cols() != matrix.Cols() {
 		panic("")
@@ -392,7 +392,7 @@ func (m *SparseMatrix) SetRow(row int, matrix SparseMatrix) {
 }
 
 func (m *SparseMatrix) SetCol(col int, matrix SparseMatrix) {
-	m.checkRowCol(0, col)
+	m.checkRowsCols(0, col)
 
 	if !matrix.IsColVector() || m.Rows() != matrix.Rows() {
 		panic("")
