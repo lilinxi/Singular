@@ -18,6 +18,8 @@ func TestDenseHouseholder(t *testing.T) {
 	fmt.Println(H.Scale(13))
 	fmt.Println(H.Dot(x))
 	fmt.Println(EqualDenseMatrix(H.Dot(x), y))
+
+	assert.T(t, EqualDenseMatrix(H.Dot(x), y))
 }
 
 func TestDenseQR(t *testing.T) {
