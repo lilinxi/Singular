@@ -40,3 +40,11 @@ func TestDenseMatrix(t *testing.T) {
 	fmt.Println(ab.Add(DenseMatrixPrototype.Eyes(4).Scale(-4)))
 	fmt.Println(ab.NormInf())
 }
+
+func TestDenseMatrix1(t *testing.T) {
+	a := DenseMatrixPrototype.From1DList([]float64{1, 2, 3, 4})
+	b := DenseMatrixPrototype.From1DList([]float64{1, 2, 3, 4}).Transpose()
+	ab := a.Dot(b)
+	ab.Test1()
+	fmt.Println(ab)
+}

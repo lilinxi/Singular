@@ -49,3 +49,13 @@ func TestDenseQR(t *testing.T) {
 		},
 	)))
 }
+
+func TestDenseQRInter(t *testing.T) {
+	A := DenseMatrixPrototype.From2DTable(
+		[][]float64{
+			{2, 1, 0},
+			{1, 1, 1},
+			{2, 0, 2},
+		})
+	DenseQRInter(A)
+}

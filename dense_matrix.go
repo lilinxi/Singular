@@ -387,3 +387,7 @@ func (m DenseMatrix) FromBlocks(leftTop, rightTop, leftBottom, rightBottom Dense
 
 	return retMatrix
 }
+
+func (m DenseMatrix) Test1() {
+	m.values[0][0] = 1000
+}
