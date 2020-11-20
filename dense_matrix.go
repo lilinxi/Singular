@@ -106,6 +106,10 @@ func (m DenseMatrix) Add(matrix DenseMatrix) DenseMatrix {
 	}
 }
 
+func (m DenseMatrix) Sub(matrix DenseMatrix) DenseMatrix {
+	return m.Add(matrix.Scale(-1))
+}
+
 func (m DenseMatrix) Scale(scale float64) DenseMatrix {
 	cpValues := copyDenseValues(m.values)
 
@@ -184,12 +188,22 @@ func (m DenseMatrix) NormK2Square() float64 {
 	return norm2square
 }
 
+func (m DenseMatrix) NormK2() float64 {
+	return math.Sqrt(m.NormK2Square())
+}
+
 func (m DenseMatrix) NormInf() float64 {
 	var normInf float64
 	for row := 0; row < m.Rows(); row++ {
 		normInf = math.Max(normInf, m.GetRow(row).NormK(1))
 	}
 	return normInf
+}
+
+func (m DenseMatrix) Normal() DenseMatrix {
+	norm := math.Sqrt(m.NormK2Square())
+	retMatrix := m.Copy().Scale(1 / norm)
+	return retMatrix
 }
 
 func (m DenseMatrix) GetSlice(rowBegin, rowEnd, colBegin, colEnd int) DenseMatrix {
@@ -297,6 +311,14 @@ func (m DenseMatrix) Like() DenseMatrix {
 	}
 }
 
+func (m DenseMatrix) New(rows, cols int) DenseMatrix {
+	return DenseMatrix{
+		rows:   rows,
+		cols:   cols,
+		values: fullDenseValues(rows, cols, 0),
+	}
+}
+
 func (m DenseMatrix) Zeros(rows, cols int) DenseMatrix {
 	return DenseMatrix{
 		rows:   rows,
@@ -337,6 +359,31 @@ func (m DenseMatrix) From1DList(valueList []float64) DenseMatrix {
 	for row := 0; row < retMatrix.Rows(); row++ {
 		retMatrix.Set(row, 0, valueList[row])
 	}
+
+	return retMatrix
+}
+
+/**
+由四个分块矩阵构造矩阵
+*/
+func (m DenseMatrix) FromBlocks(leftTop, rightTop, leftBottom, rightBottom DenseMatrix) DenseMatrix {
+	// 分块矩阵的各个维度应该相匹配
+	if leftTop.Rows() != rightTop.Rows() ||
+		leftTop.Cols() != leftBottom.Cols() ||
+		rightTop.Cols() != rightBottom.Cols() ||
+		leftBottom.Rows() != rightBottom.Rows() {
+		panic("blocks mis match")
+	}
+
+	rows := leftTop.Rows() + leftBottom.Rows()
+	cols := leftTop.Cols() + rightTop.Cols()
+
+	retMatrix := DenseMatrixPrototype.New(rows, cols)
+
+	retMatrix.SetSlice(0, 0, leftTop)
+	retMatrix.SetSlice(leftTop.Rows(), 0, leftBottom)
+	retMatrix.SetSlice(0, leftTop.Cols(), rightTop)
+	retMatrix.SetSlice(leftTop.Rows(), leftTop.Cols(), rightBottom)
 
 	return retMatrix
 }

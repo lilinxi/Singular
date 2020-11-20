@@ -39,5 +39,4 @@ func TestSparseMatrix(t *testing.T) {
 	fmt.Println(NewSparseMatrixEyes(4))
 	fmt.Println(ab.Add(NewSparseMatrixEyes(4).Scale(-4)))
 	fmt.Println(ab.NormInf())
-
 }
