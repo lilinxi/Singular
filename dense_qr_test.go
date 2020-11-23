@@ -53,9 +53,15 @@ func TestDenseQR(t *testing.T) {
 func TestDenseQRInter(t *testing.T) {
 	A := DenseMatrixPrototype.From2DTable(
 		[][]float64{
-			{2, 1, 0},
-			{1, 1, 1},
-			{2, 0, 2},
+			{3, 2},
+			{2, 4},
 		})
-	DenseQRInter(A)
+	lambda := DenseQRInter(A)
+	fmt.Println(lambda)
+
+	assert.T(t, EqualDenseMatrix(lambda, DenseMatrixPrototype.From2DTable(
+		[][]float64{
+			{5.561552812808825, 0},
+			{0, 1.438447187191171},
+		})))
 }

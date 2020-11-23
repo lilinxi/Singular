@@ -51,6 +51,10 @@ func EqualDenseMatrix(a DenseMatrix, b DenseMatrix) bool {
 	return true
 }
 
+func EqualDenseMatrixNormK(a, b DenseMatrix, k float64) bool {
+	return Equal(a.NormK(k), b.NormK(k))
+}
+
 func ErrorDenseMatrix(a DenseMatrix, b DenseMatrix) float64 {
 	if a.Rows() != b.Rows() || a.Cols() != b.Cols() {
 		panic("")

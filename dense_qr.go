@@ -1,7 +1,5 @@
 package Singular
 
-import "fmt"
-
 /**
 由向量 w 构建 Householder 矩阵，为反射矩阵，对称正交矩阵
 */
@@ -55,11 +53,15 @@ func DenseQR(matrix DenseMatrix) (Q, R DenseMatrix) {
 	return Q, R
 }
 
-func DenseQRInter(matrix DenseMatrix) {
+func DenseQRInter(matrix DenseMatrix) DenseMatrix {
 	A := matrix.Copy()
-	for i := 0; i < 10; i++ {
+	for true {
 		Q, R := DenseQR(A)
-		A = R.Dot(Q)
-		fmt.Println(A)
+		Atmp := R.Dot(Q)
+		if EqualDenseMatrix(A, Atmp) {
+			return Atmp
+		}
+		A = Atmp
 	}
+	panic("unexpected error")
 }
