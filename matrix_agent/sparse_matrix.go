@@ -324,7 +324,7 @@ package Singular
 //	return norm2square
 //}
 //
-//func (m SparseMatrix) Norm(pow float64) float64 {
+//func (m SparseMatrix) NormK(pow float64) float64 {
 //	if pow == 1 {
 //		var norm float64
 //		for _, values := range m.values {
@@ -346,7 +346,7 @@ package Singular
 //func (m SparseMatrix) NormInf() float64 {
 //	var normInf float64
 //	for i := 0; i < m.Rows(); i++ {
-//		normInf = math.Max(normInf, m.GetRow(i).Norm(1))
+//		normInf = math.Max(normInf, m.GetRow(i).NormK(1))
 //	}
 //	return normInf
 //}

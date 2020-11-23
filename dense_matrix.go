@@ -209,13 +209,16 @@ func (m DenseMatrix) Normal() DenseMatrix {
 func (m DenseMatrix) GetSlice(rowBegin, rowEnd, colBegin, colEnd int) DenseMatrix {
 	m.assertRowsCols(rowBegin, colBegin)
 	m.assertRowsCols(rowEnd-1, colEnd-1)
+
 	rows := rowEnd - rowBegin
 	cols := colEnd - colBegin
+
 	if rows <= 0 || cols <= 0 {
 		panic(fmt.Sprintf("slice(rows, cols): (%d, %d)", rows, cols))
 	}
 
 	var slice = m.Zeros(rows, cols)
+
 	for row := 0; row < slice.Rows(); row++ {
 		for col := 0; col < slice.Cols(); col++ {
 			slice.Set(row, col, m.Get(row+rowBegin, col+colBegin))
@@ -227,10 +230,13 @@ func (m DenseMatrix) GetSlice(rowBegin, rowEnd, colBegin, colEnd int) DenseMatri
 func (m *DenseMatrix) SetSlice(rowBegin, colBegin int, matrix DenseMatrix) {
 	rowEnd := rowBegin + matrix.Rows()
 	colEnd := colBegin + matrix.Cols()
+
 	m.assertRowsCols(rowBegin, colBegin)
 	m.assertRowsCols(rowEnd-1, colEnd-1)
+
 	rows := rowEnd - rowBegin
 	cols := colEnd - colBegin
+
 	if rows <= 0 || cols <= 0 {
 		panic(fmt.Sprintf("slice(rows, cols): (%d, %d)", rows, cols))
 	}
@@ -386,8 +392,4 @@ func (m DenseMatrix) FromBlocks(leftTop, rightTop, leftBottom, rightBottom Dense
 	retMatrix.SetSlice(leftTop.Rows(), leftTop.Cols(), rightBottom)
 
 	return retMatrix
-}
-
-func (m DenseMatrix) Test1() {
-	m.values[0][0] = 1000
 }

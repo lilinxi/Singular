@@ -14,15 +14,15 @@ func InversePowerMethod(matrix SparseMatrix, offset, epsilon float64) (eig float
 	}
 
 	vec = NewSparseMatrixFull(matrix.Rows(), 1, 1)
-	vec.Scale(vec.Norm(2))
+	vec.Scale(vec.NormK(2))
 
 	var lastEig float64 = 0
 	vec = LUSolve(matrix, vec)
-	lastEig = vec.Norm(2)
+	lastEig = vec.NormK(2)
 	vec = vec.Scale(1 / lastEig)
 	for {
 		vec = LUSolve(matrix, vec)
-		eig = vec.Norm(2)
+		eig = vec.NormK(2)
 		vec = vec.Scale(1 / eig)
 		if math.Abs(lastEig-eig) < epsilon {
 			break

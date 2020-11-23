@@ -32,7 +32,7 @@ package Singular
 //	Transpose() Matrix
 //
 //	Norm2Square() float64
-//	Norm(pow float64) float64
+//	NormK(pow float64) float64
 //	NormInf() float64
 //
 //	GetSlice(rowBegin, rowEnd, colBegin, colEnd int) Matrix
@@ -108,7 +108,7 @@ package Singular
 //func (m Matrix) Transpose() Matrix          { panic("no impl") }
 //
 //func (m Matrix) Norm2Square() float64     { panic("no impl") }
-//func (m Matrix) Norm(pow float64) float64 { panic("no impl") }
+//func (m Matrix) NormK(pow float64) float64 { panic("no impl") }
 //func (m Matrix) NormInf() float64         { panic("no impl") }
 //
 //func (m Matrix) GetSlice(rowBegin, rowEnd, colBegin, colEnd int) Matrix { panic("no impl") }

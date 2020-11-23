@@ -6,133 +6,40 @@ import (
 	"math"
 )
 
+var SparseMatrixPrototype = SparseMatrix{
+	rows:   0,
+	cols:   0,
+	values: nil,
+}
+
 type SparseMatrix struct {
 	rows, cols int
 	values     map[int]map[int]float64 // map[rows]map[cols]float64
 }
 
-type Tuple struct {
-	row, col int
-	value    float64
-}
+//func NewSparseMatrixFrom1DList(valueList []float64) SparseMatrix {
 
-func NewSparseMatrix(rows, cols int) SparseMatrix {
-	return SparseMatrix{
-		rows:   rows,
-		cols:   cols,
-		values: make(map[int]map[int]float64),
-	}
-}
-
-func NewSparseMatrixZeros(size int) SparseMatrix {
-	return SparseMatrix{
-		rows:   size,
-		cols:   size,
-		values: make(map[int]map[int]float64),
-	}
-}
-
-func NewSparseMatrixEyes(size int) SparseMatrix {
-	ret := SparseMatrix{
-		rows:   size,
-		cols:   size,
-		values: make(map[int]map[int]float64),
-	}
-	for i := 0; i < size; i++ {
-		ret.Set(i, i, 1)
-	}
-	return ret
-}
-
-func NewSparseMatrixFull(rows, cols int, value float64) SparseMatrix {
-	ret := SparseMatrix{
-		rows:   rows,
-		cols:   cols,
-		values: make(map[int]map[int]float64),
-	}
-	for i := 0; i < rows; i++ {
-		for j := 0; j < cols; j++ {
-			ret.Set(i, j, value)
-		}
-	}
-	return ret
-}
-
-func NewSparseMatrixFromMap(rows, cols int, values map[int]map[int]float64) SparseMatrix {
-	return SparseMatrix{
-		rows:   rows,
-		cols:   cols,
-		values: values,
-	}
-}
-
-func NewSparseMatrixCopy(sparseMatrix SparseMatrix) SparseMatrix {
-	return SparseMatrix{
-		rows:   sparseMatrix.Rows(),
-		cols:   sparseMatrix.Cols(),
-		values: copyValues(sparseMatrix.values),
-	}
-}
-
-func NewSparseMatrixFrom2DTable(rows, cols int, valueTable [][]float64) SparseMatrix {
-	values := make(map[int]map[int]float64)
-
-	for row := 0; row < rows; row++ {
-		for col := 0; col < cols; col++ {
-			if valueTable[row][col] != 0 {
-				if _, ok := values[row]; !ok {
-					values[row] = make(map[int]float64)
-				}
-				values[row][col] = valueTable[row][col]
-			}
-		}
-	}
-
-	return SparseMatrix{
-		rows:   rows,
-		cols:   cols,
-		values: values,
-	}
-}
-
-func NewSparseMatrixFrom1DList(valueList []float64) SparseMatrix {
-	values := make(map[int]map[int]float64)
-
-	for col, value := range valueList {
-		if value == 0 {
-			continue
-		} else {
-			values[col] = make(map[int]float64)
-			values[col][0] = value
-		}
-	}
-
-	return SparseMatrix{
-		rows:   len(valueList),
-		cols:   1,
-		values: values,
-	}
-}
-
-func NewSparseMatrixFromTupleList(rows, cols int, tupleList []Tuple) SparseMatrix {
-	values := make(map[int]map[int]float64)
-
-	for _, tuple := range tupleList {
-		if _, ok := values[tuple.row]; !ok {
-			values[tuple.row] = make(map[int]float64)
-		}
-		values[tuple.row][tuple.col] = tuple.value
-	}
-
-	return SparseMatrix{
-		rows:   rows,
-		cols:   cols,
-		values: values,
-	}
-}
+//}
+//
+//func NewSparseMatrixFromTupleList(rows, cols int, tupleList []Tuple) SparseMatrix {
+//	values := make(map[int]map[int]float64)
+//
+//	for _, tuple := range tupleList {
+//		if _, ok := values[tuple.row]; !ok {
+//			values[tuple.row] = make(map[int]float64)
+//		}
+//		values[tuple.row][tuple.col] = tuple.value
+//	}
+//
+//	return SparseMatrix{
+//		rows:   rows,
+//		cols:   cols,
+//		values: values,
+//	}
+//}
 
 // 递归拷贝
-func copyValues(values map[int]map[int]float64) map[int]map[int]float64 {
+func copySparseValues(values map[int]map[int]float64) map[int]map[int]float64 {
 	cp := make(map[int]map[int]float64)
 	for row, values := range values {
 		cp[row] = make(map[int]float64)
@@ -147,18 +54,28 @@ func (m SparseMatrix) Rows() int         { return m.rows }
 func (m SparseMatrix) Cols() int         { return m.cols }
 func (m SparseMatrix) IsRowVector() bool { return m.Rows() == 1 }
 func (m SparseMatrix) IsColVector() bool { return m.Cols() == 1 }
-func (m SparseMatrix) Square() bool      { return m.Rows() == m.Cols() }
+func (m SparseMatrix) IsSquare() bool    { return m.Rows() == m.Cols() }
 
-func (m SparseMatrix) checkRowsCols(rows, cols int) {
+func (m SparseMatrix) assertRowsCols(rows, cols int) {
 	if rows >= m.Rows() || cols >= m.Cols() || rows < 0 || cols < 0 {
 		panic(fmt.Sprintf("error: (%d, %d) must limit: (%d, %d)", rows, cols, m.Rows(), m.Cols()))
 	}
 }
 
-func (m SparseMatrix) Get(rows, cols int) float64 {
-	if rows >= m.Rows() || cols >= m.Cols() || rows < 0 || cols < 0 {
-		panic("")
+func (m SparseMatrix) assertShapeMatch(matrix SparseMatrix) {
+	if m.Rows() != matrix.Rows() || m.Cols() != matrix.Cols() {
+		panic(fmt.Sprintf("error: (%d, %d) must match: (%d, %d)", matrix.Rows(), matrix.Cols(), m.Rows(), m.Cols()))
 	}
+}
+
+func (m SparseMatrix) assertDotMatch(matrix SparseMatrix) {
+	if m.Cols() != matrix.Rows() {
+		panic(fmt.Sprintf("error: (%d, %d) must match: (%d, %d)", matrix.Rows(), matrix.Cols(), m.Rows(), m.Cols()))
+	}
+}
+
+func (m SparseMatrix) Get(rows, cols int) float64 {
+	m.assertRowsCols(rows, cols)
 
 	values, ok := m.values[rows]
 	if !ok {
@@ -172,6 +89,8 @@ func (m SparseMatrix) Get(rows, cols int) float64 {
 }
 
 func (m *SparseMatrix) Set(rows, cols int, value float64) {
+	m.assertRowsCols(rows, cols)
+
 	if value == 0 {
 		return
 	}
@@ -182,6 +101,8 @@ func (m *SparseMatrix) Set(rows, cols int, value float64) {
 }
 
 func (m *SparseMatrix) SetAdd(rows, cols int, value float64) {
+	m.assertRowsCols(rows, cols)
+
 	if _, ok := m.values[rows]; !ok {
 		m.values[rows] = make(map[int]float64)
 	}
@@ -192,6 +113,8 @@ func (m *SparseMatrix) SetAdd(rows, cols int, value float64) {
 }
 
 func (m *SparseMatrix) SetScale(rows, cols int, value float64) {
+	m.assertRowsCols(rows, cols)
+
 	if _, ok := m.values[rows]; !ok {
 		m.values[rows] = make(map[int]float64)
 	}
@@ -202,21 +125,19 @@ func (m *SparseMatrix) SetScale(rows, cols int, value float64) {
 }
 
 func (m SparseMatrix) Add(matrix SparseMatrix) SparseMatrix {
-	if m.Rows() != matrix.Rows() || m.Cols() != matrix.Cols() {
-		panic("")
-	}
+	m.assertShapeMatch(matrix)
 
-	retValues := copyValues(m.values)
+	cpValues := copySparseValues(m.values)
 
 	for row, values := range matrix.values {
-		if _, ok := retValues[row]; !ok {
-			retValues[row] = make(map[int]float64)
+		if _, ok := cpValues[row]; !ok {
+			cpValues[row] = make(map[int]float64)
 		}
 		for col, value := range values {
-			if _, ok := retValues[row][col]; !ok {
-				retValues[row][col] = value
+			if _, ok := cpValues[row][col]; !ok {
+				cpValues[row][col] = value
 			} else {
-				retValues[row][col] += value
+				cpValues[row][col] += value
 			}
 		}
 	}
@@ -224,32 +145,34 @@ func (m SparseMatrix) Add(matrix SparseMatrix) SparseMatrix {
 	return SparseMatrix{
 		rows:   m.rows,
 		cols:   m.cols,
-		values: retValues,
+		values: cpValues,
 	}
 }
 
+func (m SparseMatrix) Sub(matrix SparseMatrix) SparseMatrix {
+	return m.Add(matrix.Scale(-1))
+}
+
 func (m SparseMatrix) Scale(scale float64) SparseMatrix {
-	retValues := copyValues(m.values)
+	cpValues := copySparseValues(m.values)
 
 	for row, values := range m.values {
 		for col, _ := range values {
-			retValues[row][col] *= scale
+			cpValues[row][col] *= scale
 		}
 	}
 
 	return SparseMatrix{
 		rows:   m.rows,
 		cols:   m.cols,
-		values: retValues,
+		values: cpValues,
 	}
 }
 
 func (m SparseMatrix) Dot(matrix SparseMatrix) SparseMatrix {
-	if m.Cols() != matrix.Rows() {
-		panic("")
-	}
+	m.assertDotMatch(matrix)
 
-	retValues := make(map[int]map[int]float64)
+	cpValues := make(map[int]map[int]float64)
 
 	for row := 0; row < m.Rows(); row++ {
 		for col := 0; col < matrix.Cols(); col++ {
@@ -261,10 +184,10 @@ func (m SparseMatrix) Dot(matrix SparseMatrix) SparseMatrix {
 				value += m.values[row][k] * matrix.values[k][col]
 			}
 			if value != 0 {
-				if _, ok := retValues[row]; !ok {
-					retValues[row] = make(map[int]float64)
+				if _, ok := cpValues[row]; !ok {
+					cpValues[row] = make(map[int]float64)
 				}
-				retValues[row][col] = value
+				cpValues[row][col] = value
 			}
 		}
 	}
@@ -272,40 +195,30 @@ func (m SparseMatrix) Dot(matrix SparseMatrix) SparseMatrix {
 	return SparseMatrix{
 		rows:   m.rows,
 		cols:   matrix.cols,
-		values: retValues,
+		values: cpValues,
 	}
 }
 
 func (m SparseMatrix) Transpose() SparseMatrix {
-	retValues := make(map[int]map[int]float64)
+	cpValues := make(map[int]map[int]float64)
 
 	for row, values := range m.values {
 		for col, value := range values {
-			if _, ok := retValues[col]; !ok {
-				retValues[col] = make(map[int]float64)
+			if _, ok := cpValues[col]; !ok {
+				cpValues[col] = make(map[int]float64)
 			}
-			retValues[col][row] = value
+			cpValues[col][row] = value
 		}
 	}
 
 	return SparseMatrix{
 		rows:   m.cols,
 		cols:   m.rows,
-		values: retValues,
+		values: cpValues,
 	}
 }
 
-func (m SparseMatrix) Norm2Square() float64 {
-	var norm2square float64
-	for _, values := range m.values {
-		for _, value := range values {
-			norm2square += value * value
-		}
-	}
-	return norm2square
-}
-
-func (m SparseMatrix) Norm(pow float64) float64 {
+func (m SparseMatrix) NormK(pow float64) float64 {
 	if pow == 1 {
 		var norm float64
 		for _, values := range m.values {
@@ -324,23 +237,47 @@ func (m SparseMatrix) Norm(pow float64) float64 {
 	return math.Pow(norm, 1/pow)
 }
 
+func (m SparseMatrix) NormK2Square() float64 {
+	var norm2square float64
+	for _, values := range m.values {
+		for _, value := range values {
+			norm2square += value * value
+		}
+	}
+	return norm2square
+}
+
+func (m SparseMatrix) NormK2() float64 {
+	return math.Sqrt(m.NormK2Square())
+}
+
 func (m SparseMatrix) NormInf() float64 {
 	var normInf float64
 	for i := 0; i < m.Rows(); i++ {
-		normInf = math.Max(normInf, m.GetRow(i).Norm(1))
+		normInf = math.Max(normInf, m.GetRow(i).NormK(1))
 	}
 	return normInf
 }
 
+func (m SparseMatrix) Normal() SparseMatrix {
+	norm := math.Sqrt(m.NormK2Square())
+	retMatrix := m.Copy().Scale(1 / norm)
+	return retMatrix
+}
+
 func (m SparseMatrix) GetSlice(rowBegin, rowEnd, colBegin, colEnd int) SparseMatrix {
-	m.checkRowsCols(rowBegin, colBegin)
-	m.checkRowsCols(rowEnd-1, colEnd-1)
+	m.assertRowsCols(rowBegin, colBegin)
+	m.assertRowsCols(rowEnd-1, colEnd-1)
+
 	row := rowEnd - rowBegin
 	col := colEnd - colBegin
+
 	if row <= 0 || col <= 0 {
 		panic("")
 	}
-	var slice = NewSparseMatrix(row, col)
+
+	var slice = SparseMatrixPrototype.New(row, col)
+
 	for i := 0; i < slice.Rows(); i++ {
 		for j := 0; j < slice.Cols(); j++ {
 			slice.Set(i, j, m.Get(i+rowBegin, j+colBegin))
@@ -353,8 +290,8 @@ func (m *SparseMatrix) SetSlice(rowBegin, colBegin int, matrix SparseMatrix) {
 	rowEnd := rowBegin + matrix.Rows()
 	colEnd := colBegin + matrix.Cols()
 
-	m.checkRowsCols(rowBegin, colBegin)
-	m.checkRowsCols(rowEnd-1, colEnd-1)
+	m.assertRowsCols(rowBegin, colBegin)
+	m.assertRowsCols(rowEnd-1, colEnd-1)
 
 	row := rowEnd - rowBegin
 	col := colEnd - colBegin
@@ -370,17 +307,17 @@ func (m *SparseMatrix) SetSlice(rowBegin, colBegin int, matrix SparseMatrix) {
 }
 
 func (m SparseMatrix) GetRow(row int) SparseMatrix {
-	m.checkRowsCols(row, 0)
+	m.assertRowsCols(row, 0)
 	return m.GetSlice(row, row+1, 0, m.Cols())
 }
 
 func (m SparseMatrix) GetCol(col int) SparseMatrix {
-	m.checkRowsCols(0, col)
+	m.assertRowsCols(0, col)
 	return m.GetSlice(0, m.Rows(), col, col+1)
 }
 
 func (m *SparseMatrix) SetRow(row int, matrix SparseMatrix) {
-	m.checkRowsCols(row, 0)
+	m.assertRowsCols(row, 0)
 
 	if !matrix.IsRowVector() || m.Cols() != matrix.Cols() {
 		panic("")
@@ -392,7 +329,7 @@ func (m *SparseMatrix) SetRow(row int, matrix SparseMatrix) {
 }
 
 func (m *SparseMatrix) SetCol(col int, matrix SparseMatrix) {
-	m.checkRowsCols(0, col)
+	m.assertRowsCols(0, col)
 
 	if !matrix.IsColVector() || m.Rows() != matrix.Rows() {
 		panic("")
@@ -422,16 +359,115 @@ func (m SparseMatrix) String() string {
 	return buf.String()
 }
 
-/**
-复制矩阵
- */
 func (m SparseMatrix) Copy() SparseMatrix {
-	return NewSparseMatrixCopy(m)
+	return SparseMatrix{
+		rows:   m.Rows(),
+		cols:   m.Cols(),
+		values: copySparseValues(m.values),
+	}
+}
+
+func (m SparseMatrix) Like() SparseMatrix {
+	return SparseMatrix{
+		rows:   m.Rows(),
+		cols:   m.Cols(),
+		values: make(map[int]map[int]float64),
+	}
+}
+
+func (m SparseMatrix) New(rows, cols int) SparseMatrix {
+	return SparseMatrix{
+		rows:   rows,
+		cols:   cols,
+		values: make(map[int]map[int]float64),
+	}
+}
+
+func (m SparseMatrix) Zeros(rows, cols int) SparseMatrix {
+	return SparseMatrix{
+		rows:   rows,
+		cols:   cols,
+		values: make(map[int]map[int]float64),
+	}
+}
+
+func (m SparseMatrix) Eyes(size int) SparseMatrix {
+	retMatrix := m.Zeros(size, size)
+
+	for i := 0; i < size; i++ {
+		retMatrix.Set(i, i, 1)
+	}
+
+	return retMatrix
+}
+
+func (m SparseMatrix) Full(rows, cols int, value float64) SparseMatrix {
+	panic("using dense matrix instead")
+}
+
+func (m SparseMatrix) From2DTable(valueTable [][]float64) SparseMatrix {
+	values := make(map[int]map[int]float64)
+	rows := len(valueTable)
+	cols := len(valueTable[0])
+
+	for row := 0; row < rows; row++ {
+		for col := 0; col < cols; col++ {
+			if valueTable[row][col] != 0 {
+				if _, ok := values[row]; !ok {
+					values[row] = make(map[int]float64)
+				}
+				values[row][col] = valueTable[row][col]
+			}
+		}
+	}
+
+	return SparseMatrix{
+		rows:   rows,
+		cols:   cols,
+		values: values,
+	}
+}
+
+func (m SparseMatrix) From1DList(valueList []float64) SparseMatrix {
+	values := make(map[int]map[int]float64)
+
+	for col, value := range valueList {
+		if value == 0 {
+			continue
+		} else {
+			values[col] = make(map[int]float64)
+			values[col][0] = value
+		}
+	}
+
+	return SparseMatrix{
+		rows:   len(valueList),
+		cols:   1,
+		values: values,
+	}
 }
 
 /**
-复制矩阵的大小
- */
-func (m SparseMatrix) Like() SparseMatrix {
-	return NewSparseMatrix(m.Rows(), m.Cols())
+由四个分块矩阵构造矩阵
+*/
+func (m SparseMatrix) FromBlocks(leftTop, rightTop, leftBottom, rightBottom SparseMatrix) SparseMatrix {
+	// 分块矩阵的各个维度应该相匹配
+	if leftTop.Rows() != rightTop.Rows() ||
+		leftTop.Cols() != leftBottom.Cols() ||
+		rightTop.Cols() != rightBottom.Cols() ||
+		leftBottom.Rows() != rightBottom.Rows() {
+		panic("blocks mis match")
+	}
+
+	rows := leftTop.Rows() + leftBottom.Rows()
+	cols := leftTop.Cols() + rightTop.Cols()
+
+	retMatrix := SparseMatrixPrototype.New(rows, cols)
+
+	retMatrix.SetSlice(0, 0, leftTop)
+	retMatrix.SetSlice(leftTop.Rows(), 0, leftBottom)
+	retMatrix.SetSlice(0, leftTop.Cols(), rightTop)
+	retMatrix.SetSlice(leftTop.Rows(), leftTop.Cols(), rightBottom)
+
+	return retMatrix
 }

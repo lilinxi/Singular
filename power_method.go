@@ -15,15 +15,15 @@ func PowerMethodDev(matrix SparseMatrix, offset, epsilon float64) (eig float64, 
 	}
 
 	vec = NewSparseMatrixFull(matrix.Rows(), 1, 1)
-	vec.Scale(vec.Norm(2))
+	vec.Scale(vec.NormK(2))
 
 	var lastEig float64 = 0
 	vec = matrix.Dot(vec)
-	lastEig = vec.Norm(2)
+	lastEig = vec.NormK(2)
 	vec = vec.Scale(1 / lastEig)
 	for {
 		vecTmp := matrix.Dot(vec)
-		eig = vecTmp.Norm(2)
+		eig = vecTmp.NormK(2)
 		vecTmp = vecTmp.Scale(1 / eig)
 		err := ErrorSparseMatrix(vec, vecTmp)
 		vec = vecTmp
@@ -51,15 +51,15 @@ func PowerMethodDev2(matrix SparseMatrix, offset, epsilon float64) (eig float64,
 	}
 
 	vec = NewSparseMatrixFull(matrix.Rows(), 1, 1)
-	vec.Scale(vec.Norm(1))
+	vec.Scale(vec.NormK(1))
 
 	var lastEig float64 = 0
 	vec = matrix.Dot(vec)
-	lastEig = vec.Norm(1)
+	lastEig = vec.NormK(1)
 	vec = vec.Scale(1 / lastEig)
 	for {
 		vec = matrix.Dot(vec)
-		eig = vec.Norm(1)
+		eig = vec.NormK(1)
 		vec = vec.Scale(1 / eig)
 		if math.Abs(lastEig-eig) < epsilon {
 			break
@@ -84,15 +84,15 @@ func PowerMethod(matrix SparseMatrix, offset, epsilon float64) (eig float64, vec
 	}
 
 	vec = NewSparseMatrixFull(matrix.Rows(), 1, 1)
-	vec.Scale(vec.Norm(2))
+	vec.Scale(vec.NormK(2))
 
 	var lastEig float64 = 0
 	vec = matrix.Dot(vec)
-	lastEig = vec.Norm(2)
+	lastEig = vec.NormK(2)
 	vec = vec.Scale(1 / lastEig)
 	for {
 		vec = matrix.Dot(vec)
-		eig = vec.Norm(2)
+		eig = vec.NormK(2)
 		vec = vec.Scale(1 / eig)
 		if math.Abs(lastEig-eig) < epsilon {
 			break

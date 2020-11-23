@@ -4,6 +4,7 @@ package Singular
 go 的一个不好用的地方就是没有办法在父类中调用子类的方法，所以就写不出来模板方法，只能使用自下而上的继承，或者使用自下而上的代理
 这里使用原型模式，方便矩阵 Dense 和 Sparse 的区分
 go 传参的指针和值没有太大的区别，只有在赋值到接口时能不能使用指针接收器的区别
+go 中指针和值没有明确区分，即使 Matrix 进行值传递，也会修改到内部的指针数据
 */
 
 type Matrixable interface {
@@ -29,14 +30,17 @@ type Matrixable interface {
 
 	// 数学运算
 	Add(matrix Matrixable) Matrixable
+	Sub(matrix Matrixable) Matrixable
 	Scale(scale float64) Matrixable
 	Dot(matrix Matrixable) Matrixable
 	Transpose() Matrixable
 
 	// 范数
-	NormK(k float64) float64 // k 阶范数
-	NormK2Square() float64   // 2 阶范数的平方
-	NormInf() float64        // 无穷范数
+	NormK(k float64) float64	// k 阶范数
+	NormK2Square() float64  	// 2 阶范数的平方
+	NormK2() float64  	// 2 阶范数
+	NormInf() float64       	// 无穷范数
+	Normal() Matrixable			// 使用 2 阶范数单位化
 
 	// slice getter-setter
 	GetSlice(rowBegin, rowEnd, colBegin, colEnd int) Matrixable
@@ -53,10 +57,12 @@ type Matrixable interface {
 	Copy() Matrixable
 	Like() Matrixable
 
-	// 复制原型构造器
+	// 高级原型构造器
+	New(rows, cols int) Matrixable
 	Zeros(rows, cols int) Matrixable
 	Eyes(size int) Matrixable
 	Full(rows, cols int, value float64) Matrixable
 	From2DTable(valueTable [][]float64) Matrixable
 	From1DList(valueList []float64) Matrixable
+	FromBlocks(leftTop, rightTop, leftBottom, rightBottom Matrixable) Matrixable
 }
