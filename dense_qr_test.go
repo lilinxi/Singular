@@ -50,18 +50,30 @@ func TestDenseQR(t *testing.T) {
 	)))
 }
 
-func TestDenseQRInter(t *testing.T) {
+func TestDenseQRIter(t *testing.T) {
 	A := DenseMatrixPrototype.From2DTable(
 		[][]float64{
 			{3, 2},
 			{2, 4},
 		})
-	lambda := DenseQRInter(A)
+	lambda := DenseQRIter(A)
 	fmt.Println(lambda)
 
-	assert.T(t, EqualDenseMatrix(lambda, DenseMatrixPrototype.From2DTable(
+	assert.T(t, EqualDenseMatrix(lambda, DenseMatrixPrototype.From1DList(
+		[]float64{5.561552812808825, 1.438447187191171},
+	)))
+}
+
+func TestDenseQRDisplaceIter(t *testing.T) {
+	A := DenseMatrixPrototype.From2DTable(
 		[][]float64{
-			{5.561552812808825, 0},
-			{0, 1.438447187191171},
-		})))
+			{3, 2},
+			{2, 4},
+		})
+	lambda := DenseQRDisplaceIter(A)
+	fmt.Println(lambda)
+
+	assert.T(t, EqualDenseMatrix(lambda, DenseMatrixPrototype.From1DList(
+		[]float64{5.561552812808825, 1.438447187191171},
+	)))
 }

@@ -1,5 +1,10 @@
 package Singular
 
+import (
+	"fmt"
+	"sort"
+)
+
 /**
 由向量 w 构建 Householder 矩阵，为反射矩阵，对称正交矩阵
 */
@@ -53,15 +58,61 @@ func DenseQR(matrix DenseMatrix) (Q, R DenseMatrix) {
 	return Q, R
 }
 
-func DenseQRInter(matrix DenseMatrix) DenseMatrix {
+/**
+QR 迭代法计算所有特征值
+Ak = Qk·Rk
+Ak+1 = Rk·Qk
+Ak 与 Ak+1 相似，且 Ak+1 收敛到对角阵，其对角线即为特征值
+*/
+func DenseQRIter(matrix DenseMatrix) DenseMatrix {
+	if !matrix.IsSquare() {
+		panic("matrix must be square")
+	}
+	n := matrix.Rows()
 	A := matrix.Copy()
 	for true {
 		Q, R := DenseQR(A)
 		Atmp := R.Dot(Q)
 		if EqualDenseMatrix(A, Atmp) {
-			return Atmp
+			break
 		}
 		A = Atmp
 	}
-	panic("unexpected error")
+	lambda := make([]float64, n)
+	for i := 0; i < n; i++ {
+		lambda[i] = A.Get(i, i)
+	}
+	sort.Sort(sort.Reverse(sort.Float64Slice(lambda))) // 降序排序，[Reverse 包装了原 Less 方法](https://itimetraveler.github.io/2016/09/07/%E3%80%90Go%E8%AF%AD%E8%A8%80%E3%80%91%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E6%8E%92%E5%BA%8F%E5%92%8C%20slice%20%E6%8E%92%E5%BA%8F/)
+	return DenseMatrixPrototype.From1DList(lambda)
+}
+
+/**
+带双步位移的 QR 迭代法计算所有特征值，收敛速度更快
+Ak-sk·I = Qk·Rk
+Ak+1 = Rk·Qk+sk·I
+Ak 与 Ak+1 相似，且 Ak+1 收敛到对角阵，其对角线即为特征值
+sk = a_nn^k
+*/
+func DenseQRDisplaceIter(matrix DenseMatrix) DenseMatrix {
+	if !matrix.IsSquare() {
+		panic("matrix must be square")
+	}
+	n := matrix.Rows()
+	A := matrix.Copy()
+	for true {
+		sk := A.Get(n-1, n-1)
+		Q, R := DenseQR(A.Sub(DenseMatrixPrototype.Eyes(n).Scale(sk)))
+		Atmp := R.Dot(Q).Add(DenseMatrixPrototype.Eyes(n).Scale(sk))
+		if EqualDenseMatrix(A, Atmp) {
+			break
+		}
+		fmt.Println(Atmp)
+		A = Atmp
+	}
+	lambda := make([]float64, n)
+	for i := 0; i < n; i++ {
+		lambda[i] = A.Get(i, i)
+	}
+	sort.Sort(sort.Reverse(sort.Float64Slice(lambda))) // 降序排序，[Reverse 包装了原 Less 方法](https://itimetraveler.github.io/2016/09/07/%E3%80%90Go%E8%AF%AD%E8%A8%80%E3%80%91%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E6%8E%92%E5%BA%8F%E5%92%8C%20slice%20%E6%8E%92%E5%BA%8F/)
+	return DenseMatrixPrototype.From1DList(lambda)
 }
