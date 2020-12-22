@@ -6,7 +6,7 @@ import (
 )
 
 func TestPowerMethod(t *testing.T) {
-	A := NewSparseMatrixFrom2DTable(3, 3, [][]float64{
+	A := SparseMatrixPrototype.From2DTable([][]float64{
 		{1, 2, 3},
 		{2, 1, 3},
 		{3, 3, 5},
@@ -18,7 +18,7 @@ func TestPowerMethod(t *testing.T) {
 	//-0.35890
 	//8.35890
 
-	eig, vec := PowerMethod(A, 0, Epsilon)
+	eig, vec := SparsePowerMethod(A, 0, Epsilon)
 	fmt.Println(eig)
 	fmt.Println(vec)
 
@@ -28,7 +28,7 @@ func TestPowerMethod(t *testing.T) {
 	fmt.Println("Error:", ErrorSparseMatrix(vec.Scale(eig), A.Dot(vec)))
 
 	for i := -10.0; i < 10; i++ {
-		eig, _ := PowerMethod(A, i, Epsilon)
+		eig, _ := SparsePowerMethod(A, i, Epsilon)
 		fmt.Println(eig)
 	}
 }

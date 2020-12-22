@@ -6,8 +6,8 @@ import (
 )
 
 func TestSparseMatrix(t *testing.T) {
-	a := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4})
-	b := NewSparseMatrixFrom1DList([]float64{1, 2, 3, 4}).Transpose()
+	a := SparseMatrixPrototype.From1DList([]float64{1, 2, 3, 4})
+	b := SparseMatrixPrototype.From1DList([]float64{1, 2, 3, 4}).Transpose()
 	ab := a.Dot(b)
 	fmt.Println(a)
 	fmt.Println(b)
@@ -36,7 +36,7 @@ func TestSparseMatrix(t *testing.T) {
 	ab.SetCol(0, abC3)
 	fmt.Println(ab)
 
-	fmt.Println(NewSparseMatrixEyes(4))
-	fmt.Println(ab.Add(NewSparseMatrixEyes(4).Scale(-4)))
+	fmt.Println(SparseMatrixPrototype.Eyes(4))
+	fmt.Println(ab.Add(SparseMatrixPrototype.Eyes(4).Scale(-4)))
 	fmt.Println(ab.NormInf())
 }

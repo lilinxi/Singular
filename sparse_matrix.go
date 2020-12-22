@@ -402,7 +402,15 @@ func (m SparseMatrix) Eyes(size int) SparseMatrix {
 }
 
 func (m SparseMatrix) Full(rows, cols int, value float64) SparseMatrix {
-	panic("using dense matrix instead")
+	retMatrix := m.Zeros(rows, cols)
+
+	for row := 0; row < rows; row++ {
+		for col := 0; col < cols; col++ {
+			retMatrix.Set(row, col, value)
+		}
+	}
+
+	return retMatrix
 }
 
 func (m SparseMatrix) From2DTable(valueTable [][]float64) SparseMatrix {

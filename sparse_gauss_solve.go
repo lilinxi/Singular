@@ -1,6 +1,6 @@
 package Singular
 
-func GaussElimination(A, b SparseMatrix) (x SparseMatrix) {
+func SparseGaussSolve(A, b SparseMatrix) (x SparseMatrix) {
 	// step1 消元
 	for i := 0; i < A.Rows(); i++ { // 选择消去的主元
 		if A.Get(i, i) == 0 {
@@ -16,17 +16,13 @@ func GaussElimination(A, b SparseMatrix) (x SparseMatrix) {
 	}
 
 	// step2 回代
-	x = NewSparseMatrixCopy(b)
+	x = b.Copy()
 	for i := A.Rows() - 1; i >= 0; i-- {
 		for j := i + 1; j < A.Rows(); j++ {
 			x.SetAdd(i, 0, -A.Get(i, j)*x.Get(j, 0))
 		}
 		x.SetScale(i, 0, 1/A.Get(i, i))
 	}
-
-	//fmt.Println(A)
-	//fmt.Println(b)
-	//fmt.Println(x)
 
 	return x
 }
