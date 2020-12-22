@@ -2,6 +2,7 @@ package Singular
 
 import (
 	"fmt"
+	"github.com/bmizerany/assert"
 	"testing"
 )
 
@@ -19,16 +20,22 @@ func TestPowerMethod(t *testing.T) {
 	//8.35890
 
 	eig, vec := SparsePowerMethod(A, 0, Epsilon)
-	fmt.Println(eig)
-	fmt.Println(vec)
 
-	fmt.Println(vec.Scale(eig))
-	fmt.Println(A.Dot(vec))
+	assert.T(t, Equal(eig, 8.358898943540675))
+	assert.T(t, EqualSparseMatrix(vec, SparseMatrixPrototype.From1DList(
+		[]float64{
+			0.4389146460234735,
+			0.4389146460234735,
+			0.784033077753852},
+	)))
 
-	fmt.Println("Error:", ErrorSparseMatrix(vec.Scale(eig), A.Dot(vec)))
+	eig, vec = SparseInversePowerMethod(A, 0, Epsilon)
 
-	for i := -10.0; i < 10; i++ {
-		eig, _ := SparsePowerMethod(A, i, Epsilon)
-		fmt.Println(eig)
-	}
+	assert.T(t, Equal(eig, -0.3588989435406737))
+	assert.T(t, EqualSparseMatrix(vec, SparseMatrixPrototype.From1DList(
+		[]float64{
+			-0.5543951055176068,
+			-0.5543951055176067,
+			0.6207190459106626},
+	)))
 }

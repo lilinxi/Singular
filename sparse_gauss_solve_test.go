@@ -1,7 +1,7 @@
 package Singular
 
 import (
-	"fmt"
+	"github.com/bmizerany/assert"
 	"testing"
 )
 
@@ -11,13 +11,16 @@ func TestGaussElimination(t *testing.T) {
 		{2, 5, 8},
 		{3, 6, 11},
 	}
-	ASparse := NewSparseMatrixFrom2DTable(3, 3, AValue)
-	fmt.Println(ASparse)
+	ASparse := SparseMatrixPrototype.From2DTable(AValue)
 
 	bValue := [][]float64{{1}, {1}, {1}}
-	bSparse := NewSparseMatrixFrom2DTable(3, 1, bValue)
-	fmt.Println(bSparse)
+	bSparse := SparseMatrixPrototype.From2DTable(bValue)
 
-	x := GaussElimination(ASparse, bSparse)
-	fmt.Println(x) // {-1/3, 1/3, 0}
+	x := SparseGaussSolve(ASparse, bSparse)
+	assert.T(t, EqualSparseMatrix(x, SparseMatrixPrototype.From1DList(
+		[]float64{
+			-0.33333333333333326,
+			0.3333333333333333,
+			0},
+	)))
 }

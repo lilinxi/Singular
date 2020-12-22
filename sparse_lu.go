@@ -1,13 +1,11 @@
 package Singular
 
-import "fmt"
-
 func LU(A SparseMatrix) (L, U SparseMatrix) {
-	if !A.Square() {
+	if !A.IsSquare() {
 		panic("")
 	}
-	U = NewSparseMatrix(A.Rows(), A.Cols())
-	L = NewSparseMatrix(A.Rows(), A.Cols())
+	U = SparseMatrixPrototype.New(A.Rows(), A.Cols())
+	L = SparseMatrixPrototype.New(A.Rows(), A.Cols())
 	U.SetRow(0, A.GetRow(0))
 	L.SetCol(0, A.GetCol(0).Scale(1/U.Get(0, 0)))
 	var lSlice, uSlice SparseMatrix
@@ -54,7 +52,7 @@ func LUSolve(A, b SparseMatrix) SparseMatrix {
 
 func InverseL(L SparseMatrix) SparseMatrix {
 	matrix := L.Copy()
-	inverse := NewSparseMatrixEyes(matrix.Rows())
+	inverse := SparseMatrixPrototype.Eyes(matrix.Rows())
 	for i := 0; i < matrix.Rows()-1; i++ {
 		inverse.SetRow(i, inverse.GetRow(i).Scale(matrix.Get(i, i)))
 		matrix.SetRow(i, matrix.GetRow(i).Scale(matrix.Get(i, i)))
@@ -74,14 +72,14 @@ func InverseL(L SparseMatrix) SparseMatrix {
 	return inverse
 }
 
-// TODO: Error
-func InverseU(matrixU SparseMatrix) SparseMatrix {
-	matrixL := matrixU.Transpose()
-	fmt.Println("debug 1:", matrixL)
-	inverseL := InverseL(matrixL)
-	fmt.Println("debug 2:", inverseL)
-	fmt.Println("debug 3:", inverseL.Dot(matrixL))
-	fmt.Println("debug 4:", matrixL.Dot(inverseL))
-	inverseU := inverseL.Transpose()
-	return inverseU
-}
+//// TODO: Error
+//func InverseU(matrixU SparseMatrix) SparseMatrix {
+//	matrixL := matrixU.Transpose()
+//	fmt.Println("debug 1:", matrixL)
+//	inverseL := InverseL(matrixL)
+//	fmt.Println("debug 2:", inverseL)
+//	fmt.Println("debug 3:", inverseL.Dot(matrixL))
+//	fmt.Println("debug 4:", matrixL.Dot(inverseL))
+//	inverseU := inverseL.Transpose()
+//	return inverseU
+//}
